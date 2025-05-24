@@ -1,0 +1,39 @@
+.container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 16px;
+    border: 1px solid #ddd;
+  }
+  
+  .input {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .button {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  
+  .button:hover {
+    background-color: #218838;
+  }
+  
+  .answers {
+    margin-top: 12px;
+    list-style: none;
+    padding: 0;
+  }
+  
+  .answers li {
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
