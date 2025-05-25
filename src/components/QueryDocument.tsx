@@ -19,19 +19,25 @@ const QueryDocument: React.FC = () => {
   const [taskStatus, setTaskStatus] = useState<string | null>(null);
   const [statusLoading, setStatusLoading] = useState(false);
 
-  const fetchTasks = async () => {
+  const fetchTasks = async (reset: boolean = false) => {
+    if (reset) {
+      setEmailSubmitted(false);
+      setTasks([]);
+      return;
+    }
+  
     if (!userEmail) {
       setError('Please enter your email.');
       return;
     }
-
+  
     setLoading(true);
     setError(null);
-
+  
     try {
       const response = await fetch(`${config.API_BASE_URL}/users/tasks/${userEmail}`);
       const data = await response.json();
-
+  
       if (Array.isArray(data) && data.length > 0) {
         setTasks(data);
         setEmailSubmitted(true);
@@ -41,7 +47,7 @@ const QueryDocument: React.FC = () => {
     } catch (err) {
       setError('Failed to fetch documents. Please check your email.');
     }
-
+  
     setLoading(false);
   };
 
@@ -112,36 +118,73 @@ const QueryDocument: React.FC = () => {
     setStatusLoading(false);
   };
 
-  return (
-    <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
+    return (
+    <div style={{ border: '1px solid #ddd', padding: '0.75rem', maxWidth: '600px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
       {!emailSubmitted && (
         <>
-          <h2>Enter your Email</h2>
+          <h2 style={{ marginBottom: '1rem', }}>Enter your Email</h2>
           <input
             type="email"
             value={userEmail}
             onChange={(e) => setUserEmail(e.target.value)}
-            style={{ width: '100%', padding: '0.5rem', marginBottom: '0.5rem' }}
+            style={{
+              width: '95%',
+              padding: '0.75rem 0rem 0.75rem 0.75rem',
+              marginBottom: '1rem',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              fontSize: '1rem',
+            }}
             placeholder="your.email@example.com"
           />
-          <button onClick={fetchTasks} disabled={loading}>
+          <button
+            onClick={() => fetchTasks()}
+            disabled={loading}
+          >
             {loading ? 'Loading...' : 'Fetch Documents'}
           </button>
         </>
       )}
-
+  
       {emailSubmitted && (
         <>
-          <h2>Select Document & Ask a Question</h2>
+          <h2 style={{ marginBottom: '1rem', textAlign: 'center' }}>Select Document & Ask a Question</h2>
 
-          <label>Select Document:</label>
+          <p style={{ textAlign: 'center', marginBottom: '1rem', fontStyle: 'italic', color: '#555' }}>
+            Email: <strong>{userEmail}</strong>
+          </p>
+          <button
+            onClick={() => fetchTasks(true)}
+            disabled={loading}
+            style={{
+              width: '50%',
+              margin: 'auto 25%',
+              padding: '0.75rem',
+              marginBottom: '1rem',
+              border: 'none',
+              borderRadius: '4px',
+              fontSize: '1rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {loading ? 'Refetching...' : 'Refetch Documents'}
+          </button>
+  
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Select Document:</label>
           <select
             value={selectedTaskId}
             onChange={(e) => {
               setSelectedTaskId(e.target.value);
               setTaskStatus(null);
             }}
-            style={{ width: '100%', padding: '0.5rem', marginBottom: '0.5rem' }}
+            style={{
+              width: '98%',
+              padding: '0.75rem 0rem 0.75rem 0.75rem',
+              marginBottom: '1rem',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              fontSize: '1rem',
+            }}
           >
             <option value="">-- Select a document --</option>
             {tasks.map((task) => (
@@ -150,39 +193,82 @@ const QueryDocument: React.FC = () => {
               </option>
             ))}
           </select>
-
+  
           <div style={{ marginBottom: '1rem' }}>
-            <button onClick={checkTaskStatus} disabled={statusLoading}>
+            <button
+              onClick={checkTaskStatus}
+              disabled={statusLoading}
+              style={{
+                width: '50%',
+                margin: 'auto 25%',
+                padding: '0.75rem',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                fontSize: '1rem',
+                cursor: statusLoading ? 'not-allowed' : 'pointer',
+              }}
+            >
               {statusLoading ? 'Checking...' : 'Check Status'}
             </button>
             {taskStatus && (
-              <p style={{ marginTop: '0.5rem' }}>{taskStatus}</p>
+              <p style={{ marginTop: '0.5rem', textAlign: 'center' }}>{taskStatus}</p>
             )}
           </div>
-
-          <label>Question:</label>
+  
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Question:</label>
           <input
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem' }}
+            style={{
+              width: '95%',
+              padding: '0.75rem 0rem 0.75rem 0.75rem',
+              marginBottom: '1rem',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              fontSize: '1rem',
+            }}
             placeholder="Type your question here"
           />
-
-          <button onClick={handleQuery} disabled={loading}>
+  
+          <button
+            onClick={handleQuery}
+            disabled={loading}
+            style={{
+              width: '98%',
+              padding: '0.75rem',
+              backgroundColor: loading ? '#ccc' : '#007BFF',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              fontSize: '1rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}
+          >
             {loading ? 'Searching...' : 'Ask'}
           </button>
         </>
       )}
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
+  
+      {error && <p style={{ color: 'red', marginTop: '1rem', textAlign: 'center' }}>{error}</p>}
+  
       {answers.length > 0 && (
         <div style={{ marginTop: '2rem' }}>
-          <h3>Answers:</h3>
-          <ul>
+          <h3 style={{ textAlign: 'center' }}>Answers:</h3>
+          <ul style={{ listStyleType: 'none', padding: 0 }}>
             {answers.map((ans, index) => (
-              <li key={index}>{ans}</li>
+              <li
+                key={index}
+                style={{
+                  padding: '0.75rem',
+                  marginBottom: '0.5rem',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd',
+                }}
+              >
+                {ans}
+              </li>
             ))}
           </ul>
         </div>
