@@ -7,9 +7,13 @@ const UploadDocument: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [status, setStatus] = useState<string>("");
   const [isStructuredJson, setIsStructuredJson] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleUpload = async () => {
     if (!file) return;
+
+    setLoading(true);
+    setStatus("");
 
     const formData = new FormData();
     formData.append("file", file);
@@ -20,7 +24,7 @@ const UploadDocument: React.FC = () => {
       method: "POST",
       body: formData,
     });
-
+    setLoading(false);
     const data = await response.json();
     setStatus(`Task ID: ${data.task_id}, Status: ${data.Status}`);
   };
@@ -29,11 +33,10 @@ const UploadDocument: React.FC = () => {
     const selectedFile = e.target.files?.[0] || null;
     setFile(selectedFile);
 
-    // Check if the selected file is a JSON file
     if (selectedFile && selectedFile.name.endsWith('.json')) {
-      setIsStructuredJson(false); // Default to false
+      setIsStructuredJson(false);
     } else {
-      setIsStructuredJson(false); // Reset if not a JSON file
+      setIsStructuredJson(false);
     }
   };
 
@@ -78,7 +81,18 @@ const UploadDocument: React.FC = () => {
         onChange={(e) => setEmail(e.target.value)}
         className={styles.input}
       />
-      <button onClick={handleUpload} className={styles.button}>Upload</button>
+      <button
+        onClick={handleUpload}
+        className={styles.button}
+        disabled={loading}
+        style={{
+          backgroundColor: loading ? '#ccc' : '#007BFF',
+          cursor: loading ? 'not-allowed' : 'pointer',
+        }}
+      >
+        {loading ? 'Uploading...' : 'Upload'}
+      </button>
+      {loading && <p style={{ color: '#007BFF', marginTop: '1rem' }}>Uploading, please wait...</p>}
       <p>{status}</p>
     </div>
   );
