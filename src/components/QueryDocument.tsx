@@ -131,7 +131,7 @@ const QueryDocument: React.FC = () => {
       const response = await fetch(`${config.API_BASE_URL}/document/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ task_id: selectedTaskId, question }),
+        body: JSON.stringify({ task_id: String(selectedTaskId), question }),
       });
 
       const data = await response.json();
